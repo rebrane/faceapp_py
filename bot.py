@@ -17,9 +17,8 @@ server_sem = threading.Semaphore(0)
 msg_queue = collections.deque()
 slack = slackbot.Slackbot(params.token, params.channel)
 
-
 class SlackRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
-	server_version = "SlackBotHTTP/" + "0.01"
+	server_version = "SlackBotHTTP/" + "0.1"
 	def do_POST(self):
 		global msg_queue,server_sem
 		r = json.loads(
