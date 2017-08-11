@@ -2,13 +2,15 @@ import json
 import string
 import random
 import httplib
+import argparse
 
-DEBUG=1
+DEBUG = 1
+USER_AGENT = "FaceApp/1.0.342 (Linux; Android 4.4)"
+API = "v2.3"
+HOST = "node-01.faceapp.io"
 
 def generate_device_id():
     return ''.join([random.choice(string.ascii_lowercase) for x in range(8)])
-
-USER_AGENT = "FaceApp/1.0.342 (Linux; Android 4.4)"
 
 class UploadHTTPResponse(httplib.HTTPResponse, object):
     # Override the 'begin' method to consume the 100 continue
@@ -19,10 +21,8 @@ class UploadHTTPResponse(httplib.HTTPResponse, object):
 
 class FaceAppDevice:
     def __init__(self,
-             device_id=None, 
-             user_agent=USER_AGENT,
-             host="node-01.faceapp.io",
-             api="v2.3"):
+                 device_id=None, user_agent=USER_AGENT, host=HOST,
+                 api=API):
         if not device_id:
             device_id = generate_device_id()
         self.device_id = device_id
@@ -75,3 +75,15 @@ class FaceAppDevice:
             raise Exception(r.getheader("X-FaceApp-ErrorCode","unknown"))
 
         return r.read()
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Faceapp interface.')
+    parser.add_argument('filter', help="name of filter")
+    parser.add_argument('infile', help="input file")
+    parser.add_argument('outfile', help="destination file")
+
+    args = parser.parse_args()
+
+    f = FaceAppDevice()
+    photoid = f.upload_photo(args.infile)
+    file(args.outfile,"wc").write(f.filter_photo(photoid['code'], args.filter))
