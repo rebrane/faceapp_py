@@ -4,7 +4,7 @@ import random
 import multipart_httplib
 import argparse
 
-DEBUG = 1
+DEBUG = 0
 USER_AGENT = "FaceApp/1.0.342 (Linux; Android 4.4)"
 API = "v2.3"
 HOST = "node-01.faceapp.io"
@@ -33,7 +33,7 @@ class FaceAppDevice:
         return json.loads(r.read())['code']
 
     def filter_photo(self, photoid, filtername):
-        self.h.request("GET", "/api/%s/photos/%s/filters/%s?cropped=false" % (self.api, photoid, filtername), headers = self.headers)
+        self.h.request("GET", "/api/%s/photos/%s/filters/%s?cropped=true" % (self.api, photoid, filtername), headers = self.headers)
         r = self.h.getresponse()
         
         if r.status != 200:
